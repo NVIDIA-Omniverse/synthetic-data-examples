@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  deployment:
+    build: deployment
+    # Access the lab with: http://127.0.0.1:8884/lab?token=nvsecuretoken2
+    command: jupyter lab -y --allow-root --no-browser --ip=0.0.0.0 --port=8884 --notebook-dir=/opt/project/ --NotebookApp.token='nvsecuretoken2' --NotebookApp.password='nvsecurepassword'
+    shm_size: '2gb'
+    volumes:
+      - './deployment/code/:/opt/project/'
+      - './models:/opt/models/'
+    ports:
+      - "8884:8884"
+  training:
+    build: training
+    # Access the lab with: http://127.0.0.1:8883/lab?token=nvsecuretoken1
+    command: jupyter lab -y --allow-root --no-browser --ip=0.0.0.0 --port=8883 --notebook-dir=/opt/project/ --NotebookApp.token='nvsecuretoken1' --NotebookApp.password='nvsecurepassword'
+    volumes:
+      - './training/code/:/opt/project/'
+    ports:
+      - "8883:8883"
+  data-generation:
+    build: data_generation
+    # Access the lab with: http://127.0.0.1:8882/lab?token=nvsecuretoken0s
+    command: jupyter lab -y --allow-root --no-browser --ip=0.0.0.0 --port=8882 --notebook-dir=/opt/project/ --NotebookApp.token='nvsecuretoken0' --NotebookApp.password='nvsecurepassword'
+    volumes:
+      - './data_generation/code/:/opt/project/'
+    ports:
+      - "8882:8882"
