@@ -30,9 +30,9 @@ import omni.replicator.core as rep
 
 with rep.new_layer():
     # Define paths for the character, the props, the environment and the surface where the assets will be scattered in.
-    PROPS = "omniverse://10.0.1.168/NVIDIA/Assets/Isaac/2022.1/Isaac/Props/YCB/Axis_Aligned_Physics"
-    SURFACE = "omniverse://10.0.1.168/NVIDIA/Assets/Scenes/Templates/Basic/display_riser.usd"
-    ENVS = "omniverse://10.0.1.168/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
+    PROPS = "omniverse://localhost/NVIDIA/Assets/Isaac/2022.1/Isaac/Props/YCB/Axis_Aligned_Physics"
+    SURFACE = "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Basic/display_riser.usd"
+    ENVS = "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
 
     # Define randomizer function for Base assets. This randomization includes placement and rotation of the assets on the surface.
     def env_props(size=50):
