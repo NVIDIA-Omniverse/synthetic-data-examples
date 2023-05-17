@@ -1,0 +1,46 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+# default_language_version:
+#     python: python3.10
+fail_fast: true
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: pretty-format-json
+    -   id: check-toml
+    # -   id: detect-aws-credentials
+    -   id: detect-private-key
+-   repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+    -   id: python-use-type-annotations
+    -   id: rst-backticks
+    # -   id: python-no-eval
+    -   id: python-use-type-annotations
+    -   id: rst-backticks
+    -   id: rst-directive-colons
+    -   id: rst-inline-touching-normal
+    -   id: text-unicode-replacement-char
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    -   id: black
+    -   id: black-jupyter
+
+-   repo: https://github.com/sbrunner/hooks
+    rev: 0.5.0
+    hooks:
+      # Check that the copyright is up to date
+      - id: copyright
+      # Check that the copyright is present and up to date
+      - id: copyright-required
+        files: '\w+\.(py)$'
+# -   repo: https://github.com/pylint-dev/pylint
+#     rev: v2.17.4
+#     hooks:
+#     -   id: pylint

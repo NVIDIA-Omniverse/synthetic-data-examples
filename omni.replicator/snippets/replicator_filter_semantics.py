@@ -30,38 +30,48 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import omni.replicator.core as rep
+from omni.syntheticdata import SyntheticData
 
-# Create a new layer for our work to be performed in.
-# This is a good habit to develop for later when working on existing Usd scenes
 with rep.new_layer():
-    # Create a simple camera with a position and a point to look at
     camera = rep.create.camera(position=(0, 500, 1000), look_at=(0, 0, 0))
 
-    # Create some simple shapes to manipulate
+    # Create simple shapes to manipulate
     plane = rep.create.plane(
         semantics=[("class", "plane")], position=(0, -100, 0), scale=(100, 1, 100)
     )
-    torus = rep.create.torus(semantics=[("class", "torus")], position=(200, 0, 100))
-    sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 0, 100))
-    cube = rep.create.cube(semantics=[("class", "cube")], position=(-200, 0, 100))
+    cubes = rep.create.cube(
+        semantics=[("class", "cube")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
+    spheres = rep.create.sphere(
+        semantics=[("class", "sphere")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
 
-    # Randomize position and scale of each object on each frame
     with rep.trigger.on_frame(num_frames=10):
-        # Creating a group so that our modify.pose operation works on all the shapes at once
-        with rep.create.group([torus, sphere, cube]):
-            rep.modify.pose(
-                position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
-                scale=rep.distribution.uniform(0.1, 2),
+        with cubes:
+            rep.randomizer.color(
+                colors=rep.distribution.normal((0.2, 0.2, 0.2), (1.0, 1.0, 1.0))
+            )
+        with spheres:
+            rep.randomizer.color(
+                colors=rep.distribution.normal((0.2, 0.2, 0.2), (1.0, 1.0, 1.0))
             )
 
-# Initialize render product and attach a writer
-render_product = rep.create.render_product(camera, (1024, 1024))
+
+render_product = rep.create.render_product(camera, (512, 512))
+
 writer = rep.WriterRegistry.get("BasicWriter")
 writer.initialize(
-    output_dir="~/replicator_examples/dli_hello_replicator/",
+    output_dir="remove_semantics",
     rgb=True,
     semantic_segmentation=True,
-    bounding_box_2d_tight=True,
+    colorize_semantic_segmentation=True,
 )
+# Filter class:sphere objects (_after_ BasicWriter is initialized)
+# https://docs.omniverse.nvidia.com/prod_extensions/prod_extensions/ext_replicator/semantics_schema_editor.html
+SyntheticData.Get().set_instance_mapping_semantic_filter("class:!sphere")
 writer.attach([render_product])
 rep.orchestrator.run()

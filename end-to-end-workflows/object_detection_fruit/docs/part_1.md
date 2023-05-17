@@ -26,9 +26,9 @@ Copy the contents of the generate_data.py script into the Script Editor tab in t
 
 Follow the documentation guidelines to launch a terminal in the correct folder location. The correct script to pass to your --/omni/replicator.scrip is generate_data_headless.py. This will generate and save the synthetic data in the same way as before, without utilizing the Omniverse GUI.
 
-- [How to run](https://docs.omniverse.nvidia.com/prod_extensions/prod_extensions/ext_replicator/headless_example.html) 
+- [How to run](https://docs.omniverse.nvidia.com/prod_extensions/prod_extensions/ext_replicator/headless_example.html)
  - Script location: `/FruitBasketOVEReplicatorDemo/data_generation/code/generate_data_headless.py`
- - We need to locate `omni.code.replicator.sh` 
+ - We need to locate `omni.code.replicator.sh`
 To find look for where Omniverse ode is locally installed
  - Run (script dictates where the output data is stored):
 `./omni.code.replicator.sh  --no-window --/omni/replicator/script= “/FruitBasketOVEReplicatorDemo/data_generation/code/generate_data_headless.py”`

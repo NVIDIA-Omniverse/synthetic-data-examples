@@ -29,39 +29,52 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import asyncio
 import omni.replicator.core as rep
+import omni.syntheticdata as sd
 
-# Create a new layer for our work to be performed in.
-# This is a good habit to develop for later when working on existing Usd scenes
-with rep.new_layer():
-    # Create a simple camera with a position and a point to look at
-    camera = rep.create.camera(position=(0, 500, 1000), look_at=(0, 0, 0))
 
-    # Create some simple shapes to manipulate
-    plane = rep.create.plane(
-        semantics=[("class", "plane")], position=(0, -100, 0), scale=(100, 1, 100)
-    )
-    torus = rep.create.torus(semantics=[("class", "torus")], position=(200, 0, 100))
-    sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 0, 100))
-    cube = rep.create.cube(semantics=[("class", "cube")], position=(-200, 0, 100))
+async def test_semantics():
+    cone = rep.create.cone(semantics=[("prim", "cone")], position=(100, 0, 0))
+    sphere = rep.create.sphere(semantics=[("prim", "sphere")], position=(-100, 0, 0))
+    invalid_type = rep.create.cube(semantics=[("shape", "boxy")], position=(0, 100, 0))
 
-    # Randomize position and scale of each object on each frame
-    with rep.trigger.on_frame(num_frames=10):
-        # Creating a group so that our modify.pose operation works on all the shapes at once
-        with rep.create.group([torus, sphere, cube]):
-            rep.modify.pose(
-                position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
-                scale=rep.distribution.uniform(0.1, 2),
-            )
+    # Setup semantic filter
+    # sd.SyntheticData.Get().set_instance_mapping_semantic_filter("prim:*")
 
-# Initialize render product and attach a writer
-render_product = rep.create.render_product(camera, (1024, 1024))
-writer = rep.WriterRegistry.get("BasicWriter")
-writer.initialize(
-    output_dir="~/replicator_examples/dli_hello_replicator/",
-    rgb=True,
-    semantic_segmentation=True,
-    bounding_box_2d_tight=True,
-)
-writer.attach([render_product])
-rep.orchestrator.run()
+    cam = rep.create.camera(position=(500, 500, 500), look_at=(0, 0, 0))
+    rp = rep.create.render_product(cam, (1024, 512))
+
+    segmentation = rep.AnnotatorRegistry.get_annotator("semantic_segmentation")
+    segmentation.attach(rp)
+
+    await rep.orchestrator.step_async()
+    data = segmentation.get_data()
+    print(data)
+
+
+# {
+#     "data": array(
+#         [
+#             [0, 0, 0, ..., 0, 0, 0],
+#             [0, 0, 0, ..., 0, 0, 0],
+#             [0, 0, 0, ..., 0, 0, 0],
+#             ...,
+#             [0, 0, 0, ..., 0, 0, 0],
+#             [0, 0, 0, ..., 0, 0, 0],
+#             [0, 0, 0, ..., 0, 0, 0],
+#         ],
+#         dtype=uint32,
+#     ),
+#     "info": {
+#         "_uniqueInstanceIDs": array([1, 1, 1], dtype=uint8),
+#         "idToLabels": {
+#             "0": {"class": "BACKGROUND"},
+#             "2": {"prim": "cone"},
+#             "3": {"prim": "sphere"},
+#             "4": {"shape": "boxy"},
+#         },
+#     },
+# }
+
+asyncio.ensure_future(test_semantics())

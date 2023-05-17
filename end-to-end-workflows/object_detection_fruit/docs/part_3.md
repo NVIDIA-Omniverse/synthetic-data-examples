@@ -1,4 +1,4 @@
-# Part 3: Deploy model to Triton 
+# Part 3: Deploy model to Triton
 
 ## Start triton server
 When we start the server we want our model to be properly located in the `/models/fasterrcnn_resnet50/1` folder.
@@ -25,4 +25,3 @@ In another terminal window, with your server running start your client
 
 - Example command:
  - ` python deploy.py -p /workspace/rgb_0.png`
-
