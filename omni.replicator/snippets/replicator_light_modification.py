@@ -31,37 +31,37 @@
 
 import omni.replicator.core as rep
 
-# Create a new layer for our work to be performed in.
-# This is a good habit to develop for later when working on existing Usd scenes
+
 with rep.new_layer():
-    # Create a simple camera with a position and a point to look at
     camera = rep.create.camera(position=(0, 500, 1000), look_at=(0, 0, 0))
 
-    # Create some simple shapes to manipulate
+    # Create simple shapes to manipulate
     plane = rep.create.plane(
         semantics=[("class", "plane")], position=(0, -100, 0), scale=(100, 1, 100)
     )
-    torus = rep.create.torus(semantics=[("class", "torus")], position=(200, 0, 100))
-    sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 0, 100))
-    cube = rep.create.cube(semantics=[("class", "cube")], position=(-200, 0, 100))
-
-    # Randomize position and scale of each object on each frame
+    cubes = rep.create.cube(
+        semantics=[("class", "cube")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
+    spheres = rep.create.sphere(
+        semantics=[("class", "sphere")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
+    lights = rep.create.light(
+        light_type="Sphere",
+        intensity=rep.distribution.normal(500, 35000),
+        position=rep.distribution.uniform((-300, 300, -300), (300, 1000, 300)),
+        scale=rep.distribution.uniform(50, 100),
+        count=3,
+    )
     with rep.trigger.on_frame(num_frames=10):
-        # Creating a group so that our modify.pose operation works on all the shapes at once
-        with rep.create.group([torus, sphere, cube]):
+        with lights:
             rep.modify.pose(
-                position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
-                scale=rep.distribution.uniform(0.1, 2),
+                position=rep.distribution.uniform((-300, 300, -300), (300, 1000, 300))
             )
-
-# Initialize render product and attach a writer
-render_product = rep.create.render_product(camera, (1024, 1024))
-writer = rep.WriterRegistry.get("BasicWriter")
-writer.initialize(
-    output_dir="~/replicator_examples/dli_hello_replicator/",
-    rgb=True,
-    semantic_segmentation=True,
-    bounding_box_2d_tight=True,
-)
-writer.attach([render_product])
-rep.orchestrator.run()
+            rep.modify.attribute("intensity", rep.distribution.uniform(1.0, 50000.0))
+            rep.modify.attribute(
+                "color", rep.distribution.normal((0.2, 0.2, 0.2), (1.0, 1.0, 1.0))
+            )

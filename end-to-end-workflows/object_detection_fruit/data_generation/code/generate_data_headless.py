@@ -1,30 +1,33 @@
-# Copyright (c) 2022-2023, NVIDIA Corporation
-# All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright (c) 2022-2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
-# 1. Redistributions of source code must retain the above copyright notice, this
-#    list of conditions and the following disclaimer.
+#     1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
 #
-# 2. Redistributions in binary form must reproduce the above copyright notice,
-#    this list of conditions and the following disclaimer in the documentation
-#    and/or other materials provided with the distribution.
+#     2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
 #
-# 3. Neither the name of the copyright holder nor the names of its
-#    contributors may be used to endorse or promote products derived from
-#    this software without specific prior written permission.
+#     3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 
 import datetime
 
@@ -35,7 +38,9 @@ import omni.replicator.core as rep
 with rep.new_layer():
     # Define paths for the character, the props, the environment and the surface where the assets will be scattered in.
     CRATE = "omniverse://localhost/NVIDIA/Samples/Marbles/assets/standalone/SM_room_crate_3/SM_room_crate_3.usd"
-    SURFACE = "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Basic/display_riser.usd"
+    SURFACE = (
+        "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Basic/display_riser.usd"
+    )
     ENVS = "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Interior/ZetCG_ExhibitionHall.usd"
     FRUIT_PROPS = {
         "apple": "omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Apple.usd",
@@ -52,7 +57,9 @@ with rep.new_layer():
 
     # Define randomizer function for Base assets. This randomization includes placement and rotation of the assets on the surface.
     def random_props(file_name, class_name, max_number=1, one_in_n_chance=3):
-        instances = rep.randomizer.instantiate(file_name, size=max_number, mode="scene_instance")
+        instances = rep.randomizer.instantiate(
+            file_name, size=max_number, mode="scene_instance"
+        )
         print(file_name)
         with instances:
             rep.modify.semantics([("class", class_name)])
@@ -61,7 +68,9 @@ with rep.new_layer():
                 rotation=rep.distribution.uniform((-180, -180, -180), (180, 180, 180)),
                 scale=rep.distribution.uniform((0.8), (1.2)),
             )
-            rep.modify.visibility(rep.distribution.choice([True], [False] * (one_in_n_chance)))
+            rep.modify.visibility(
+                rep.distribution.choice([True], [False] * (one_in_n_chance))
+            )
         return instances.node
 
     # Define randomizer function for sphere lights.
@@ -100,7 +109,10 @@ with rep.new_layer():
             random_props(f, n)
         rep.randomizer.sphere_lights(5)
         with camera:
-            rep.modify.pose(position=rep.distribution.uniform((-3, 114, -17), (-1, 116, -15)), look_at=(0, 20, 0))
+            rep.modify.pose(
+                position=rep.distribution.uniform((-3, 114, -17), (-1, 116, -15)),
+                look_at=(0, 20, 0),
+            )
 
     # Initialize and attach writer
     writer = rep.WriterRegistry.get("BasicWriter")

@@ -29,39 +29,45 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import omni.graph.core as og
 import omni.replicator.core as rep
+from omni.usd._impl.utils import get_prim_at_path
+from pxr import Semantics
+from semantics.schema.editor import remove_prim_semantics
 
-# Create a new layer for our work to be performed in.
-# This is a good habit to develop for later when working on existing Usd scenes
+# Setup simple scene
 with rep.new_layer():
-    # Create a simple camera with a position and a point to look at
+    # Simple scene setup
     camera = rep.create.camera(position=(0, 500, 1000), look_at=(0, 0, 0))
 
-    # Create some simple shapes to manipulate
+    # Create simple shapes to manipulate
     plane = rep.create.plane(
         semantics=[("class", "plane")], position=(0, -100, 0), scale=(100, 1, 100)
     )
-    torus = rep.create.torus(semantics=[("class", "torus")], position=(200, 0, 100))
-    sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 0, 100))
-    cube = rep.create.cube(semantics=[("class", "cube")], position=(-200, 0, 100))
+    cubes = rep.create.cube(
+        semantics=[("class", "cube")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
+    spheres = rep.create.sphere(
+        semantics=[("class", "sphere")],
+        position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
+        count=6,
+    )
 
-    # Randomize position and scale of each object on each frame
-    with rep.trigger.on_frame(num_frames=10):
-        # Creating a group so that our modify.pose operation works on all the shapes at once
-        with rep.create.group([torus, sphere, cube]):
-            rep.modify.pose(
-                position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
-                scale=rep.distribution.uniform(0.1, 2),
-            )
 
-# Initialize render product and attach a writer
-render_product = rep.create.render_product(camera, (1024, 1024))
-writer = rep.WriterRegistry.get("BasicWriter")
-writer.initialize(
-    output_dir="~/replicator_examples/dli_hello_replicator/",
-    rgb=True,
-    semantic_segmentation=True,
-    bounding_box_2d_tight=True,
-)
-writer.attach([render_product])
-rep.orchestrator.run()
+# Get prims to remove semantics on - Execute this first by itself
+my_spheres = rep.get.prims(semantics=[("class", "sphere")])
+
+og.Controller.evaluate_sync()  # Trigger an OmniGraph evaluation of the graph to set the values
+get_targets = rep.utils.get_node_targets(my_spheres.node, "outputs_prims")
+print(get_targets)
+# [Sdf.Path('/Replicator/Sphere_Xform'), Sdf.Path('/Replicator/Sphere_Xform_01'), Sdf.Path('/Replicator/Sphere_Xform_02'), Sdf.Path('/Replicator/Sphere_Xform_03'), Sdf.Path('/Replicator/Sphere_Xform_04'), Sdf.Path('/Replicator/Sphere_Xform_05')]
+
+# Loop through each prim_path and remove all semantic data
+for prim_path in get_targets:
+    prim = get_prim_at_path(prim_path)
+    # print(prim.HasAPI(Semantics.SemanticsAPI))
+    result = remove_prim_semantics(prim)  # To remove all semantics
+    # result = remove_prim_semantics(prim, label_type='class') # To remove only 'class' semantics
+    print(result)

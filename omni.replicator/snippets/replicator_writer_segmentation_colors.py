@@ -29,11 +29,55 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
 import omni.replicator.core as rep
+from omni.replicator.core import Writer, BackendDispatch, WriterRegistry
+
+
+class MyWriter(Writer):
+    def __init__(self, output_dir: str):
+        self._frame_id = 0
+        self.backend = BackendDispatch({"paths": {"out_dir": output_dir}})
+        self.annotators = ["rgb", "semantic_segmentation"]
+        # Dictionary mapping of label to RGBA color
+        self.CUSTOM_LABELS = {
+            "unlabelled": (0, 0, 0, 0),
+            "sphere": (128, 64, 128, 255),
+            "cube": (244, 35, 232, 255),
+            "plane": (102, 102, 156, 255),
+        }
+
+    def write(self, data):
+        render_products = [k for k in data.keys() if k.startswith("rp_")]
+        self._write_rgb(data, "rgb")
+        self._write_segmentation(data, "semantic_segmentation")
+        self._frame_id += 1
+
+    def _write_rgb(self, data, annotator: str):
+        # Save the rgb data under the correct path
+        rgb_file_path = f"rgb_{self._frame_id}.png"
+        self.backend.write_image(rgb_file_path, data[annotator])
+
+    def _write_segmentation(self, data, annotator: str):
+        seg_filepath = f"seg_{self._frame_id}.png"
+        semantic_seg_data_colorized = rep.tools.colorize_segmentation(
+            data[annotator]["data"],
+            data[annotator]["info"]["idToLabels"],
+            mapping=self.CUSTOM_LABELS,
+        )
+        self.backend.write_image(seg_filepath, semantic_seg_data_colorized)
+
+    def on_final_frame(self):
+        self.backend.sync_pending_paths()
+
+
+# Register new writer
+WriterRegistry.register(MyWriter)
 
 # Create a new layer for our work to be performed in.
 # This is a good habit to develop for later when working on existing Usd scenes
 with rep.new_layer():
+    light = rep.create.light(light_type="dome")
     # Create a simple camera with a position and a point to look at
     camera = rep.create.camera(position=(0, 500, 1000), look_at=(0, 0, 0))
 
@@ -41,7 +85,7 @@ with rep.new_layer():
     plane = rep.create.plane(
         semantics=[("class", "plane")], position=(0, -100, 0), scale=(100, 1, 100)
     )
-    torus = rep.create.torus(semantics=[("class", "torus")], position=(200, 0, 100))
+    torus = rep.create.torus(position=(200, 0, 100))  # Torus will be unlabeled
     sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 0, 100))
     cube = rep.create.cube(semantics=[("class", "cube")], position=(-200, 0, 100))
 
@@ -56,12 +100,7 @@ with rep.new_layer():
 
 # Initialize render product and attach a writer
 render_product = rep.create.render_product(camera, (1024, 1024))
-writer = rep.WriterRegistry.get("BasicWriter")
-writer.initialize(
-    output_dir="~/replicator_examples/dli_hello_replicator/",
-    rgb=True,
-    semantic_segmentation=True,
-    bounding_box_2d_tight=True,
-)
+writer = rep.WriterRegistry.get("MyWriter")
+writer.initialize(output_dir="myWriter_output")
 writer.attach([render_product])
-rep.orchestrator.run()
+rep.orchestrator.run()  # Run the simulation
