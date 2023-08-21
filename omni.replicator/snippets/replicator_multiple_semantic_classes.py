@@ -34,7 +34,7 @@ import omni.replicator.core as rep
 with rep.new_layer():
     sphere = rep.create.sphere(semantics=[("class", "sphere")], position=(0, 100, 100))
     cube = rep.create.cube(semantics=[("class2", "cube")], position=(200, 200, 100))
-    plane = rep.create.plane(semantics=[("class3", "plane")], scale=10, visible=True)
+    plane = rep.create.plane(semantics=[("class3", "plane")], scale=10)
 
     def get_shapes():
         shapes = rep.get.prims(semantics=[("class", "cube"), ("class", "sphere")])

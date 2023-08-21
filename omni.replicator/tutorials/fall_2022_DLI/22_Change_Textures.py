@@ -51,7 +51,7 @@ with rep.new_layer():
     render_product = rep.create.render_product(camera, (1024, 1024))
 
     # create plane if needed (but unused here)
-    plane = rep.create.plane(scale=10, visible=True)
+    plane = rep.create.plane(scale=10)
 
     # function to get shapes that you've created above, via their semantic labels
     def get_shapes():
