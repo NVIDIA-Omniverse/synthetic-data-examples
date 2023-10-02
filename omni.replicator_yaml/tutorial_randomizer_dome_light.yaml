@@ -1,0 +1,92 @@
+# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright (c) 2022-2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#     1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+#     2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+#     3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# Default scene settings. This script default is 1 (IsaacSim), so if you change
+# the meters per unit or up axis, you need to alter the coordinates and rotations.
+
+# IsaacSim default is 1, Code is 0.01
+stage_unit_setting:
+  settings.set_stage_meters_per_unit:
+    meters_per_unit: 1
+
+# IsaacSim default is "Z"", Code is "Y"
+stage_up_axis_setting:
+  settings.set_stage_up_axis:
+    up_axis: "Z"
+
+# This YAML script example demonstrates:
+# Randomizing the a domelight
+
+# Create the camera and render product
+camera:
+  create.camera:
+    position: [5, 0, 0]
+
+render_product:
+  create.render_product:
+    camera: camera
+    resolution: [1024, 1024]
+
+# Create the writer and initialize
+writer:
+  writers.get:
+    name: "BasicWriter"
+    init_params:
+      output_dir: "_output_yaml/TutorialRandomizerDomeLight/"
+      rgb: True
+    render_products: render_product
+
+# Register a randomizer that sets the HDR texture of a domelight
+register_dome_light:
+  randomizer.register:
+    dome_lights:
+      dome_light:
+        create.light:
+          light_type: "Dome"
+          rotation: [0, 0, 90]
+          texture:
+            distribution.sequence:
+              items:
+                - "omniverse://localhost/NVIDIA/Assets/Skies/Cloudy/champagne_castle_1_4k.hdr"
+                - "omniverse://localhost/NVIDIA/Assets/Skies/Clear/evening_road_01_4k.hdr"
+                - "omniverse://localhost/NVIDIA/Assets/Skies/Clear/mealie_road_4k.hdr"
+                - "omniverse://localhost/NVIDIA/Assets/Skies/Clear/qwantani_4k.hdr"
+
+# Set the trigger as on_frame
+trigger:
+  trigger.on_frame:
+    max_execs: 10
+    interval: 1
+
+# When the trigger executes, apply the randomizer
+with_trigger:
+  with.trigger:
+    randomizer.dome_lights: null
