@@ -1,0 +1,177 @@
+random_seed: 42
+dataset_config {
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/local/training/tao/tfrecords/distractors_warehouse/*"
+    image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_warehouse/Camera"
+  }
+  
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/local/training/tao/tfrecords/distractors_additional/*"
+    image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_additional/Camera"
+  }
+  
+  data_sources {
+    tfrecords_path: "/workspace/tao-experiments/local/training/tao/tfrecords/no_distractors/*"
+    image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/no_distractors/Camera"
+  }
+  
+  image_extension: "png"
+  
+  target_class_mapping {
+    key: "palletjack"
+    value: "palletjack"
+  }
+
+ validation_fold: 0
+
+}
+
+augmentation_config {
+  preprocessing {
+    output_image_width: 960
+    output_image_height: 544
+    min_bbox_width: 20.0
+    min_bbox_height: 20.0
+    output_image_channel: 3
+  }
+  spatial_augmentation {
+    hflip_probability: 0.5
+    zoom_min: 0.5
+    zoom_max: 1.5
+    translate_max_x: 8.0
+    translate_max_y: 8.0
+  }
+  color_augmentation {
+    hue_rotation_max: 25.0
+    saturation_shift_max: 0.20000000298
+    contrast_scale_max: 0.10000000149
+    contrast_center: 0.5
+  }
+}
+
+postprocessing_config {
+  target_class_config {
+    key: "palletjack"
+    value {
+      clustering_config {
+        clustering_algorithm: DBSCAN
+        dbscan_confidence_threshold: 0.9
+        coverage_threshold: 0.00499999988824
+        dbscan_eps: 0.15000000596
+        dbscan_min_samples: 0.0500000007451
+        minimum_bounding_box_height: 20
+      }
+    }
+  }
+}
+
+model_config {
+  pretrained_model_file: "/workspace/tao-experiments/local/training/tao/pretrained_model/resnet18.hdf5"
+  num_layers: 18
+  use_batch_norm: true
+  objective_set {
+    bbox {
+      scale: 35.0
+      offset: 0.5
+    }
+    cov {
+    }
+  }
+  arch: "resnet"
+}
+
+evaluation_config {
+  validation_period_during_training: 10
+  first_validation_epoch: 5
+  minimum_detection_ground_truth_overlap {
+    key: "palletjack"
+    value: 0.5
+  }
+  evaluation_box_config {
+    key: "palletjack"
+    value {
+      minimum_height: 25
+      maximum_height: 9999
+      minimum_width: 25
+      maximum_width: 9999
+    }
+  }
+  average_precision_mode: INTEGRATE
+}
+
+cost_function_config {
+  target_classes {
+    name: "palletjack"
+    class_weight: 1.0
+    coverage_foreground_weight: 0.0500000007451
+    objectives {
+      name: "cov"
+      initial_weight: 1.0
+      weight_target: 1.0
+    }
+    objectives {
+      name: "bbox"
+      initial_weight: 10.0
+      weight_target: 1.0
+    }
+  }
+  enable_autoweighting: true
+  max_objective_weight: 0.999899983406
+  min_objective_weight: 9.99999974738e-05
+}
+
+training_config {
+  batch_size_per_gpu: 32
+  num_epochs: 100
+  learning_rate {
+    soft_start_annealing_schedule {
+      min_learning_rate: 5e-06
+      max_learning_rate: 5e-04
+      soft_start: 0.10000000149
+      annealing: 0.699999988079
+    }
+  }
+  regularizer {
+    type: L1
+    weight: 3.00000002618e-09
+  }
+  optimizer {
+    adam {
+      epsilon: 9.99999993923e-09
+      beta1: 0.899999976158
+      beta2: 0.999000012875
+    }
+  }
+  cost_scaling {
+    initial_exponent: 20.0
+    increment: 0.005
+    decrement: 1.0
+  }
+  visualizer{
+    enabled: true
+    num_images: 10
+    scalar_logging_frequency: 10
+    infrequent_logging_frequency: 5
+    target_class_config {
+      key: "palletjack"
+      value: {
+        coverage_threshold: 0.005
+      }
+    }
+  }
+  checkpoint_interval: 10
+}
+
+bbox_rasterizer_config {
+  target_class_config {
+    key: "palletjack"
+    value {
+      cov_center_x: 0.5
+      cov_center_y: 0.5
+      cov_radius_x: 1.0
+      cov_radius_y: 1.0
+      bbox_min_radius: 1.0
+    }
+  }
+  deadzone_radius: 0.400000154972
+}
