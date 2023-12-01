@@ -1,0 +1,11 @@
+kitti_config {
+  root_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_additional/Camera"
+  image_dir_name: "rgb"
+  label_dir_name: "object_detection"
+  image_extension: ".png"
+  partition_mode: "random"
+  num_partitions: 2
+  val_split: 10
+  num_shards: 10
+}
+image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_additional/Camera"
