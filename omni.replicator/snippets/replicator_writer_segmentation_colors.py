@@ -28,7 +28,10 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
+"""
+A snippet showing to how create a custom writer to output specific colors
+in the semantic annotator output image.
+"""
 
 import omni.replicator.core as rep
 from omni.replicator.core import Writer, BackendDispatch, WriterRegistry

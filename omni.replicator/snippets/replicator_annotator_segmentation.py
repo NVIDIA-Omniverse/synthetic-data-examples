@@ -28,7 +28,9 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
+"""
+This is an example of how to view annotator data if needed.
+"""
 import asyncio
 import omni.replicator.core as rep
 import omni.syntheticdata as sd
@@ -48,11 +50,13 @@ async def test_semantics():
     segmentation = rep.AnnotatorRegistry.get_annotator("semantic_segmentation")
     segmentation.attach(rp)
 
+    # step_async() tells Omniverse to update, otherwise the annoation buffer could be empty
     await rep.orchestrator.step_async()
     data = segmentation.get_data()
     print(data)
 
 
+# Example Output:
 # {
 #     "data": array(
 #         [

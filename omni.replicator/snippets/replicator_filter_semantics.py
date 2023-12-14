@@ -28,7 +28,12 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
+"""
+This snippet shows how to use semantic filtering to remove labels or entire prims
+with specific semantic labels from being output to the semantic annotator
 
+https://docs.omniverse.nvidia.com/prod_extensions/prod_extensions/ext_replicator/semantics_schema_editor.html
+"""
 import omni.replicator.core as rep
 from omni.syntheticdata import SyntheticData
 
@@ -49,7 +54,7 @@ with rep.new_layer():
         position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
         count=6,
     )
-
+    # 10 Frames of randomizations, randomizing colors for spheres and cubes independent of each other
     with rep.trigger.on_frame(num_frames=10):
         with cubes:
             rep.randomizer.color(
@@ -65,7 +70,7 @@ render_product = rep.create.render_product(camera, (512, 512))
 
 writer = rep.WriterRegistry.get("BasicWriter")
 writer.initialize(
-    output_dir="remove_semantics",
+    output_dir="filter_semantics",
     rgb=True,
     semantic_segmentation=True,
     colorize_semantic_segmentation=True,
