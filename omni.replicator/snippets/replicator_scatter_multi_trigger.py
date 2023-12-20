@@ -26,7 +26,10 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
+"""
+This snippet shows how to setup multiple independent triggers that happen
+at different intervals in the simulation.
+"""
 import omni.graph.core as og
 import omni.replicator.core as rep
 
@@ -63,14 +66,16 @@ def randomize_spheres():
 
 rep.randomizer.register(randomize_spheres)
 
+# Trigger will execute 5 times, every-other-frame (interval=2)
 with rep.trigger.on_frame(num_frames=5, interval=2):
     rep.randomizer.randomize_spheres()
+# Trigger will execute 10 times, once every frame
 with rep.trigger.on_frame(num_frames=10):
     with cylinder:
         rep.modify.visibility(rep.distribution.sequence([True, False]))
 
-og.Controller.evaluate_sync()
-rep.orchestrator.preview()
+og.Controller.evaluate_sync()  # Only for snippet demonstration preview, not needed for production
+rep.orchestrator.preview()  # Only for snippet demonstration preview, not needed for production
 
 rp = rep.create.render_product("/OmniverseKit_Persp", (1024, 768))
 

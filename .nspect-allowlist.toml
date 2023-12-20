@@ -1,19 +1,1 @@
 version = "1.0.0"
-[oss]
-
-# if you are not adding [[oss.allowlist]] then please remove this complete tag from file or keep it commented
-# example-1: using nvbug (CVE/BDSA filtered out with nvbug will not be filtered out from the nSpect Report)
-[[oss.allowlist]]
-# *Required field (cve-id)*
-
-
-[[oss.allowlist]]
-
-
-# if you are not adding excluded directories then remove [oss.excluded] and [[oss.excluded.directories]] both tag from file.
-[oss.excluded]
-
-[[oss.excluded.directories]]
-
-
-[[oss.excluded.directories]]

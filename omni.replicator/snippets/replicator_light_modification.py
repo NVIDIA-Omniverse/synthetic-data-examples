@@ -28,7 +28,10 @@
 # CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
-
+"""
+This snippet shows how to modify attributes on prims that Replicator
+may not have a direct functional mapping for.
+"""
 import omni.replicator.core as rep
 
 

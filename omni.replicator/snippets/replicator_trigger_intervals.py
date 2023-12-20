@@ -42,12 +42,15 @@ with rep.new_layer():
         semantics=[("class", "sphere")], position=(0, 0, 100), count=6
     )
 
+    # Modify the position every 5 frames
     with rep.trigger.on_frame(num_frames=10, interval=5):
         with spheres:
             rep.modify.pose(
                 position=rep.distribution.uniform((-300, 0, -300), (300, 0, 300)),
                 scale=rep.distribution.uniform(0.1, 2),
             )
+
+    # Modify color every frame for 50 frames
     with rep.trigger.on_frame(num_frames=50):
         with spheres:
             rep.randomizer.color(
