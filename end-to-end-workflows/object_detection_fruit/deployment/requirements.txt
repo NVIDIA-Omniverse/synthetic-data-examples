@@ -1,4 +1,4 @@
 tritonclient[all]==2.23.0
-jupyterlab==3.4.5
+jupyterlab==3.6.7
 opencv-python-headless==4.5.4.60
 matplotlib==3.5.3
