@@ -1,0 +1,154 @@
+# SPDX-FileCopyrightText: Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES.
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# Copyright (c) 2024 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#     1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+#
+#     2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+#     3. Neither the name of the copyright holder nor the names of its contributors
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+# This example demonstrates using Omniverse Replicator with physics and
+# multiple objects. A number of fruit objects are chosen, have physics applied
+# and are sequentially dropped to fill a fruit crate.
+# An implementation of omni.replicator\snippets\physics\replicator_physics_fruit_drop_final-frame.py
+# In YAML
+# Fruit Drop YAML Final Frame
+
+# IsaacSim default is 1, Code is 0.01
+stage_unit_setting:
+  settings.set_stage_meters_per_unit:
+    meters_per_unit: 0.01
+
+# IsaacSim default is "Z"", Other applications use "Y"
+stage_up_axis_setting:
+  settings.set_stage_up_axis:
+    up_axis: "Z"
+
+# Randomization setup
+# Instantiate 500 of each object in random positions, rotations, and scale
+register_create_props:
+  randomizer.register:
+    create_props:
+      fruits:
+        randomizer.instantiate:
+          size: 1
+          paths:
+            distribution.choice:
+              num_samples: 500
+              choices:
+                distribution.sequence:
+                  items:
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Apple.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Avocado01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Kiwi01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Lime01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Lychee01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Fruit/Pomegranate01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Vegetables/RedOnion.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Food/Berries/strawberry.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Decor/Tchotchkes/Lemon_01.usd'
+                    - 'omniverse://localhost/NVIDIA/Assets/ArchVis/Residential/Decor/Tchotchkes/Orange_01.usd'
+      with.fruits:
+        modify.pose:
+          position:
+            distribution.uniform:
+              lower: [-8, 5,100]
+              upper: [8, 30, 300]
+          rotation:
+            distribution.uniform:
+              lower: [-180, -180, -180]
+              upper: [180, 180, 180]
+          scale:
+            distribution.normal:
+              mean: 1.0
+              std: 0.25
+        physics.rigid_body: null # if you don't want any initial speed to the obj
+
+table:
+  create.from_usd:
+    usd: "omniverse://localhost/NVIDIA/Assets/Scenes/Templates/Basic/display_riser.usd"
+
+table_physics:
+  with.table:
+    physics.collider: null
+    modify.pose:
+      rotation: [90, 0, 0]
+
+crate:
+  create.from_usd:
+    usd: "omniverse://localhost/NVIDIA/Samples/Marbles/assets/standalone/SM_room_crate_3/SM_room_crate_3.usd"
+
+crate_physics:
+  with.crate:
+    physics.collider:
+      approximation_shape: "none"
+    physics.mass:
+      mass: 10000
+
+crate_pose:
+  with.crate:
+    modify.pose:
+      position: [0, 0, 20.5]
+      rotation: [0, -90, 0]
+      scale: [1, 3, 2]
+
+# Create the camera and render product
+camera:
+  create.camera:
+    position: [120, 160, 200]
+    look_at: [0, 0, 0]
+
+render_product:
+  create.render_product:
+    camera: camera
+    resolution: [640, 480]
+
+# Create the writer and initialize
+writer:
+  writers.get:
+    name: "BasicWriter"
+    init_params:
+      output_dir: "Fruit_Drop_Yaml"
+      rgb: True
+
+on_time_trigger:
+  trigger.on_time:
+    interval: 3
+    max_execs: 11 # change this to your desired number
+    reset_physics: True
+
+on_frame_trigger:
+  trigger.on_frame:
+    interval: 89
+    max_execs: 11
+
+writer_attach:
+  writer.attach:
+    render_products: render_product
+    trigger: on_frame_trigger
+
+with_trigger:
+  with.on_time_trigger:
+    randomizer.create_props: null
