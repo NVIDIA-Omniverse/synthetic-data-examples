@@ -16,13 +16,13 @@ repos:
     -   id: rst-inline-touching-normal
     -   id: text-unicode-replacement-char
 -   repo: https://github.com/psf/black
-    rev: 24.4.2
+    rev: 25.1.0
     hooks:
     -   id: black
     -   id: black-jupyter
 
 -   repo: https://github.com/sbrunner/hooks
-    rev: 1.0.0
+    rev: 1.4.1
     hooks:
       # Check that the copyright is up to date
       - id: copyright
@@ -30,17 +30,19 @@ repos:
       - id: copyright-required
         files: '\w+\.(py)$'
 -   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: check-yaml
-    -   id: pretty-format-json
-        args: ["--autofix", "--no-sort-keys", "--indent=2"]
-    -   id: check-toml
     -   id: detect-aws-credentials
     -   id: detect-private-key
-    # -   id: check-illegal-windows-names
+    -   id: check-ast
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-toml
+    -   id: check-yaml
+    -   id: check-executables-have-shebangs
+    -   id: check-illegal-windows-names
+    -   id: pretty-format-json
+        args: ["--autofix", "--no-sort-keys", "--indent=2"]
     -   id: check-json
     -   id: check-added-large-files
 

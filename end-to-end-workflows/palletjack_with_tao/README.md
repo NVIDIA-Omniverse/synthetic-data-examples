@@ -1,5 +1,5 @@
 # Synthetic Data Generation and Training with Sim Ready Assets
-This project provides a workflow for Training Computer Vision models with Synthetic Data. We will use Isaac Sim with Omniverse Replicator to generate data for our use case and objects of interest. To ensure seamless compatibility with model training, the data generated is in the KITTI format. 
+This project provides a workflow for Training Computer Vision models with Synthetic Data. We will use Isaac Sim with Omniverse Replicator to generate data for our use case and objects of interest. To ensure seamless compatibility with model training, the data generated is in the KITTI format.
 
 These steps can be followed on a Cloud/remote GPU instance or locally
 
@@ -11,11 +11,11 @@ These steps can be followed on a Cloud/remote GPU instance or locally
 * Generating Data: Use Isaac Sim to generate data
 * Training: We will use TAO toolkit, however users can train a model in a framework of their choice with data generated
 
-### SDG 
-- Using the `palletjack` assets from the Warehouse Sim Ready Asset collection 
+### SDG
+- Using the `palletjack` assets from the Warehouse Sim Ready Asset collection
 
 - Carry out Domain Randomization in the scene with Replicator:
-    - Various attributes of the scene like lighting, textures, object pose and materials can be modified 
+    - Various attributes of the scene like lighting, textures, object pose and materials can be modified
     - Important to generate a good quality dataset to ensure model detects objects in the real world
 
 - Data output KITTI format
@@ -37,12 +37,12 @@ These steps can be followed on a Cloud/remote GPU instance or locally
 
 
 ### Training
-- TAO: Outline of steps 
+- TAO: Outline of steps
     - Generating Tfrecords
-     
+
     - Model training and evaluation
         - Model backbone selction
-        - Hyperparameters specified via `spec` file (provided with repo) 
+        - Hyperparameters specified via `spec` file (provided with repo)
         - Running inference with trained model
 
 - Sample real world detections on LOCO dataset images:
@@ -65,7 +65,7 @@ These steps can be followed on a Cloud/remote GPU instance or locally
 
 ### Deployment
 - Perform Optimizations: Pruning and QAT with TAO to reduce model size and improve performance
-- Deploy on NVIDIA Jetson powered Robot with Isaac ROS or Deepstream 
+- Deploy on NVIDIA Jetson powered Robot with Isaac ROS or Deepstream
 
 
 ## References:

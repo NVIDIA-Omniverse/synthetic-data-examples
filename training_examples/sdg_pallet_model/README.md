@@ -3,10 +3,10 @@
 <img src="images/test_image_1_output.jpg" height="256"/>
 
 This repository contains code for performing optimized TensorRT inference with a pre-trained
- pallet detection model that was trained using synthetic data with [NVIDIA Omniverse Replicator](https://developer.nvidia.com/omniverse/replicator).  
+ pallet detection model that was trained using synthetic data with [NVIDIA Omniverse Replicator](https://developer.nvidia.com/omniverse/replicator).
  The model takes as input a monocular RGB image, and outputs the pallet box estimates.  The box esimates
 are defined for each pallet side face.  So a single pallet may have multiple box
-estimates. 
+estimates.
 
 If you have any questions, please feel free to reach out by opening an issue!
 
@@ -33,7 +33,7 @@ python3 setup.py develop
 
 ### Step 2 - Download the ONNX model
 
-Download the pallet model ONNX file.  
+Download the pallet model ONNX file.
 
 | Model | Notes | Links |
 |-------|-------|-------|
@@ -44,7 +44,7 @@ Download the pallet model ONNX file.
 ### Step 3 - Build the TensorRT engine
 
 
-#### Option 1 (*recommended*) - Build the FP16 engine 
+#### Option 1 (*recommended*) - Build the FP16 engine
 
 To build the FP16 engine, call the following:
 
@@ -53,13 +53,13 @@ To build the FP16 engine, call the following:
 ```
 
 
-#### Option 2 - Build the INT8 engine 
+#### Option 2 - Build the INT8 engine
 
-> The INT8 model instructions do not yet include calibration.  Please only use 
-> this model for throughput profiling.  The accuracy is likely to vary from 
+> The INT8 model instructions do not yet include calibration.  Please only use
+> this model for throughput profiling.  The accuracy is likely to vary from
 > FP32/FP16 models.  However, once calibration is included, this may become
 > the recommended option given the improved throughput results.
-   
+
 To build the INT8 engine, call the following:
 
 ```bash
@@ -77,7 +77,7 @@ To profile the engine with the ``trtexec`` tool, call the following:
 ./profile_engine.sh <engine_path>
 ```
 
-Here are the results for a model inference at 256x256 resolution, 
+Here are the results for a model inference at 256x256 resolution,
 profiled on Jetson AGX Orin.
 
 <a id="throughput_results"/>
