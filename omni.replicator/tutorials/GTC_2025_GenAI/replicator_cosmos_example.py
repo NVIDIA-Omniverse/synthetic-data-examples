@@ -66,7 +66,9 @@ class CosmosWriter(rep.Writer):
         self._video_filepath = OUTPUT_DIR
         self.annotators = [
             rep.annotators.get(
-                "semantic_segmentation", init_params={"colorize": True, "mapping": json.dumps(MAPPING)}, device="cuda"
+                "semantic_segmentation",
+                init_params={"colorize": True, "mapping": json.dumps(MAPPING)},
+                device="cuda",
             ),
             rep.annotators.get("normals", device="cuda"),
         ]
@@ -99,7 +101,9 @@ class CosmosWriter(rep.Writer):
         """
         i, j = wp.tid()
         normal = normals[i, j]
-        normals_normalized = wp.vec3f(normal[0], normal[1], normal[2]) * 0.5 + wp.vec3f(0.5, 0.5, 0.5)
+        normals_normalized = wp.vec3f(normal[0], normal[1], normal[2]) * 0.5 + wp.vec3f(
+            0.5, 0.5, 0.5
+        )
         light_source_vec = wp.normalize(light_source[0])
         shade = 0.5 + wp.dot(normals_normalized, light_source_vec) * 0.5
         shading_out[i, j, 0] = wp.uint8(wp.float32(segmentation[i, j, 0]) * shade)
@@ -122,7 +126,9 @@ class CosmosWriter(rep.Writer):
         normals = data["normals"][:, :, :3]
         segmentation = data["semantic_segmentation"]["data"]
         if self._light_source is None:
-            self._light_source = wp.array([0.0, 0.0, 1.0], dtype=wp.vec3f, device=normals.device)
+            self._light_source = wp.array(
+                [0.0, 0.0, 1.0], dtype=wp.vec3f, device=normals.device
+            )
         shaded_seg = wp.empty_like(segmentation)
         wp.launch(
             self.shade_segmentation,
@@ -131,7 +137,9 @@ class CosmosWriter(rep.Writer):
         )
 
         height, width = shaded_seg.shape[:2]
-        self._video_encoding.encode_next_frame_from_buffer(shaded_seg.numpy().tobytes(), width=width, height=height)
+        self._video_encoding.encode_next_frame_from_buffer(
+            shaded_seg.numpy().tobytes(), width=width, height=height
+        )
         self._frame_id += 1
 
     def on_final_frame(self):

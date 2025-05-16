@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2023 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2023-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,34 +35,29 @@ BOX_EDGES = [
     [0, 2],
     [1, 3],
     [4, 6],
-    [5, 7]
+    [5, 7],
 ]
 
 
-def make_offset_grid(
-        size,
-        stride=(1, 1)
-    ):
+def make_offset_grid(size, stride=(1, 1)):
 
     grid = torch.stack(
         torch.meshgrid(
             stride[0] * (torch.arange(size[0]) + 0.5),
-            stride[1] * (torch.arange(size[1]) + 0.5)
+            stride[1] * (torch.arange(size[1]) + 0.5),
         ),
-        dim=-1
+        dim=-1,
     )
 
     return grid
 
 
 def vectormap_to_keypointmap(
-        offset_grid, 
-        vector_map, 
-        vector_scale: float = 1./256.
-    ):
+    offset_grid, vector_map, vector_scale: float = 1.0 / 256.0
+):
 
     vector_map = vector_map / vector_scale
-    keypoint_map = einops.rearrange(vector_map, "b (k d) h w -> b h w k d", d=2) 
+    keypoint_map = einops.rearrange(vector_map, "b (k d) h w -> b h w k d", d=2)
     keypoint_map = keypoint_map + offset_grid[:, :, None, :]
 
     # yx -> xy
@@ -73,10 +68,7 @@ def vectormap_to_keypointmap(
 
 def find_heatmap_peak_mask(heatmap, window=3, threshold=0.5):
 
-    all_indices = torch.arange(
-        heatmap.numel(), 
-        device=heatmap.device
-    )
+    all_indices = torch.arange(heatmap.numel(), device=heatmap.device)
 
     all_indices = all_indices.reshape(heatmap.shape)
 
@@ -84,10 +76,7 @@ def find_heatmap_peak_mask(heatmap, window=3, threshold=0.5):
         window = (window, window)
 
     values, max_indices = F.max_pool2d_with_indices(
-        heatmap,
-        kernel_size=window,
-        stride=1,
-        padding=(window[0] // 2, window[1] // 2)
+        heatmap, kernel_size=window, stride=1, padding=(window[0] // 2, window[1] // 2)
     )
 
     is_above_threshold = heatmap >= threshold
@@ -107,13 +96,9 @@ def draw_box(image_bgr, keypoints, color=(118, 186, 0), thickness=1):
         edges = BOX_EDGES
         for e in edges:
             cv2.line(
-                image_bgr, 
-                kps_i[e[0]], 
-                kps_i[e[1]], 
-                (118, 186, 0), 
-                thickness=thickness
+                image_bgr, kps_i[e[0]], kps_i[e[1]], (118, 186, 0), thickness=thickness
             )
-    
+
     return image_bgr
 
 
@@ -136,12 +121,9 @@ def pad_resize(image, output_shape):
 
     image_resize = cv2.resize(image, (w_i, h_i))
 
-    out = np.zeros_like(
-        image, 
-        shape=(output_shape[0], output_shape[1], image.shape[2])
-    )
+    out = np.zeros_like(image, shape=(output_shape[0], output_shape[1], image.shape[2]))
 
-    out[pad_top:pad_top + h_i, pad_left:pad_left + w_i] = image_resize
+    out[pad_top : pad_top + h_i, pad_left : pad_left + w_i] = image_resize
 
     pad = (pad_top, pad_left)
     scale = (image.shape[0] / h_i, image.shape[1] / w_i)
@@ -152,25 +134,19 @@ def pad_resize(image, output_shape):
 def load_trt_engine(path: str):
 
     with trt.Logger() as logger, trt.Runtime(logger) as runtime:
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             engine_bytes = f.read()
         engine = runtime.deserialize_cuda_engine(engine_bytes)
 
     return engine
 
 
-def load_trt_engine_wrapper(
-        path: str, 
-        input_names: Sequence, 
-        output_names: Sequence
-    ):
+def load_trt_engine_wrapper(path: str, input_names: Sequence, output_names: Sequence):
 
     engine = load_trt_engine(path)
 
     wrapper = torch2trt.TRTModule(
-        engine=engine,
-        input_names=input_names,
-        output_names=output_names
+        engine=engine, input_names=input_names, output_names=output_names
     )
 
     return wrapper

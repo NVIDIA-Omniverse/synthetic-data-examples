@@ -26,7 +26,7 @@
 
 ### Generating Synthetic Data for your use case
 - Make changes in the Domain Randomization under the Synthetic Data Generation [script](../palletjack_sdg/standalone_palletjack_sdg.py)
-- Add additional objects of interest in the scene (similar to how palletjacks are added, you can add forklifts, ladders etc.) to generate dataUse different models for training with TAO (for object detection, you can use YOLO, SSD, EfficientDet) 
+- Add additional objects of interest in the scene (similar to how palletjacks are added, you can add forklifts, ladders etc.) to generate dataUse different models for training with TAO (for object detection, you can use YOLO, SSD, EfficientDet)
 - Replicator provides Semantic Segmentation, Instance Segmentation, Depth and various other ground truth annotations along with RGB. You can also write your own ground truth annotator (eg: Pose Estimation: Refer to [sample](https://docs.omniverse.nvidia.com/isaacsim/latest/tutorial_replicator_offline_pose_estimation.html) These can be used for training a model of your own framework and choice)
 - Exploring the option of using Synthetic + Real data for training a network. Can be particularly useful for generating more data around particular corner cases
 

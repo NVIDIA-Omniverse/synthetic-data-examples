@@ -2,7 +2,7 @@ inferencer_config{
   # defining target class names for the experiment.
   # Note: This must be mentioned in order of the networks classes.
   target_classes: "palletjack"
-  
+
   # Inference dimensions.
   image_width: 960
   image_height: 544
@@ -19,7 +19,7 @@ bbox_handler_config{
   kitti_dump: true
   disable_overlay: false
   overlay_linewidth: 2
-  
+
   classwise_bbox_handler_config{
     key:"palletjack"
     value: {

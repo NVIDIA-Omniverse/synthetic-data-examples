@@ -4,19 +4,19 @@ dataset_config {
     tfrecords_path: "/workspace/tao-experiments/cloud/training/tao/tfrecords/distractors_warehouse/*"
     image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_warehouse/Camera"
   }
-  
+
   data_sources {
     tfrecords_path: "/workspace/tao-experiments/cloud/training/tao/tfrecords/distractors_additional/*"
     image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/distractors_additional/Camera"
   }
-  
+
   data_sources {
     tfrecords_path: "/workspace/tao-experiments/cloud/training/tao/tfrecords/no_distractors/*"
     image_directory_path: "/workspace/tao-experiments/palletjack_sdg/palletjack_data/no_distractors/Camera"
   }
-  
+
   image_extension: "png"
-  
+
   target_class_mapping {
     key: "palletjack"
     value: "palletjack"

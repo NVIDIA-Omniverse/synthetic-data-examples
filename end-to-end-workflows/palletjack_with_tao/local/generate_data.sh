@@ -14,12 +14,10 @@ OUTPUT_NO_DISTRACTORS="${PWD}/palletjack_data/no_distractors"
 ## Go to Isaac Sim location for running with ./python.sh
 cd $ISAAC_SIM_PATH
 
-echo "Starting Data Generation"  
+echo "Starting Data Generation"
 
 ./python.sh $SCRIPT_PATH --height 544 --width 960 --num_frames 2000 --distractors warehouse --data_dir $OUTPUT_WAREHOUSE
 
 ./python.sh $SCRIPT_PATH --height 544 --width 960 --num_frames 2000 --distractors additional --data_dir $OUTPUT_ADDITIONAL
 
 ./python.sh $SCRIPT_PATH --height 544 --width 960 --num_frames 1000 --distractors None --data_dir $OUTPUT_NO_DISTRACTORS
-
-
