@@ -17,5 +17,6 @@ We have included a visdualization script to run after your first training. This 
 ## Export model
 - To use the export script you can see required parameters by running
  - `python export.py --help`
+- `export.py` accepts only checkpoints created by the current `train.py`. Retrain to regenerate checkpoints saved by earlier versions.
 - Example command, make sure to dave to the `models/fasterrcnn_resnet50/1`
  - `python export.py -d /home/out.pth -o /home/models/fasterrcnn_resnet50/1`

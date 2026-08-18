@@ -228,7 +228,7 @@ def main():
             print(f"Iteration: {i}/{len_dataloader}, Loss: {losses}")
 
     writer.close()
-    torch.save(model, options.output_file)
+    torch.save(model.state_dict(), options.output_file)
 
 
 if __name__ == "__main__":
