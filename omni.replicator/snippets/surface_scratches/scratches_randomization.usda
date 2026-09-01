@@ -1839,7 +1839,7 @@ def Xform "World"
             def Shader "Shader"
             {
                 uniform token info:implementationSource = "sourceAsset"
-                uniform asset info:mdl:sourceAsset = @http://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Stone/Porcelain_Tile_6_Linen.mdl@
+                uniform asset info:mdl:sourceAsset = @https://omniverse-content-production.s3-us-west-2.amazonaws.com/Materials/Base/Stone/Porcelain_Tile_6_Linen.mdl@
                 uniform token info:mdl:sourceAsset:subIdentifier = "Porcelain_Tile_6_Linen"
                 color3f inputs:diffuse_tint = (0.086035006, 0.08880311, 0.071316786) (
                     customData = {

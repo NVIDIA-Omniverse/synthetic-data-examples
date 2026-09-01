@@ -33,6 +33,7 @@ import os
 import torch
 import torchvision
 from optparse import OptionParser
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 
 def parse_input():
@@ -54,18 +55,24 @@ def parse_input():
     return options, args
 
 
+def create_model(num_classes):
+    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(weights=None)
+    in_features = model.roi_heads.box_predictor.cls_score.in_features
+    model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+    return model
+
+
 def main():
     torch.manual_seed(0)
     options, args = parse_input()
-    model = torch.load(options.pytorch_dir)
+    model = create_model(num_classes=10)
+    state_dict = torch.load(
+        options.pytorch_dir, map_location="cpu", weights_only=True
+    )
+    model.load_state_dict(state_dict)
     model.eval()
     OUTPUT_DIR = options.output_dir
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-
-    model = torchvision.models.detection.fasterrcnn_resnet50_fpn(
-        weights="DEFAULT", num_classes=91
-    )
-    model.eval()
 
     dummy_input = torch.rand(1, 3, 1024, 1024)
 

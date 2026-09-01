@@ -10,3 +10,5 @@ RUN npm install -g configurable-http-proxy
 RUN pip install --upgrade pip setuptools
 COPY requirements.txt .
 RUN python3 -m pip install -r requirements.txt
+RUN mkdir -p /usr/local/share/jupyter/lab/settings
+COPY overrides.json /usr/local/share/jupyter/lab/settings/overrides.json
